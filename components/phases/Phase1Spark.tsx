@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { PhaseProps, InnovationProject } from '../../types';
 import AIAssistChatButton from '../AIAssistChatButton';
 import AIAssistModal from '../AIAssistModal';
-import { generateFullProject } from '../../services/geminiService';
+import { generateFullProject, generateProjectSummary } from '../../services/geminiService';
 import Loader from '../Loader';
 
 interface Phase1SparkProps extends PhaseProps {
@@ -44,7 +44,8 @@ const Phase1Spark: React.FC<Phase1SparkProps> = ({ project, updateProject, proje
         setIsGenerating(true);
         try {
             const generatedData = await generateFullProject(project.title, project.description);
-            updateProject(generatedData);
+            const summary = await generateProjectSummary({ ...project, ...generatedData });
+            updateProject({ ...generatedData, summary });
             setProjectGenerated(true);
         } catch (err) {
             setError("Ein Fehler ist aufgetreten. Die AI konnte das Projekt nicht erstellen.");
@@ -76,6 +77,19 @@ const Phase1Spark: React.FC<Phase1SparkProps> = ({ project, updateProject, proje
                             : "Geben Sie Ihrer Idee einen Namen und eine kurze Beschreibung. Die AI kann daraus ein komplettes Geschäftskonzept entwickeln."}
                     </p>
                 </div>
+                
+                 {projectGenerated && project.summary && (
+                    <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-200 animate-fade-in">
+                        <h3 className="text-md font-semibold text-indigo-800 flex items-center">
+                            <svg className="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
+                            </svg>
+                            AI Projektübersicht
+                        </h3>
+                        <p className="mt-2 text-sm text-indigo-700">{project.summary}</p>
+                    </div>
+                )}
+
 
                 <div className="space-y-6">
                     <div>

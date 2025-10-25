@@ -5,6 +5,7 @@ export interface InnovationProject {
   phase: Phase;
   title: string;
   description: string;
+  summary: string;
   problem: string;
   targetAudience: string;
   marketSize: string;

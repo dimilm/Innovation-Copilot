@@ -20,6 +20,7 @@ const App: React.FC = () => {
     phase: 'spark',
     title: 'Neues Projekt',
     description: '',
+    summary: '',
     problem: '',
     targetAudience: '',
     marketSize: '',

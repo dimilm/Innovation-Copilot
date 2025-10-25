@@ -1,5 +1,6 @@
 
 import { GoogleGenAI, Chat, Type } from "@google/genai";
+import { InnovationProject } from "../types";
 
 const API_KEY = process.env.API_KEY;
 
@@ -89,5 +90,36 @@ export const generateFullProject = async (title: string, description: string): P
     } catch (error) {
         console.error("Error generating full project with Gemini:", error);
         throw new Error("Konnte das Projekt nicht mit der AI generieren.");
+    }
+};
+
+export const generateProjectSummary = async (project: InnovationProject): Promise<string> => {
+    const prompt = `
+    Basierend auf den folgenden detaillierten Projektinformationen, erstelle eine prägnante Zusammenfassung (Executive Summary) in 2-3 Sätzen. Diese Zusammenfassung sollte die Kernidee, die Zielgruppe und den Hauptnutzen hervorheben.
+
+    PROJEKTINFORMATIONEN:
+    Titel: ${project.title}
+    Beschreibung: ${project.description}
+    Problem: ${project.problem}
+    Zielgruppe: ${project.targetAudience}
+    USP: ${project.usp}
+    Kernfunktionen: ${project.coreFeatures}
+    Einnahmequellen: ${project.revenueStreams}
+
+    Erstelle eine flüssige, überzeugende Zusammenfassung.
+    `;
+    try {
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: prompt,
+            config: {
+                temperature: 0.7,
+                systemInstruction: defaultSystemInstruction,
+            },
+        });
+        return response.text;
+    } catch (error) {
+        console.error("Error generating project summary:", error);
+        return "Zusammenfassung konnte nicht erstellt werden.";
     }
 };
